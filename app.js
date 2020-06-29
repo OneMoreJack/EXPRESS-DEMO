@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var birdsRouter = require('./routes/birds');
+var adminRouter = require('./routes/admin')
 
 var app = express();
 
@@ -24,7 +25,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/birds', birdsRouter)
+app.use('/birds', birdsRouter);
+// use the router and 401 anything falling through
+app.use('/admin', adminRouter, function (req, res, next) {
+  console.log('Unauthorized')
+  res.sendStatus(401)
+})
 
 /*
   To skip the rest of the middleware functions from a router
@@ -55,6 +61,15 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
+
+/**
+ * Error-handling middleware always takes four arguments. 
+ * You must provide four arguments to identify it as an error-handling 
+ * middleware function. Even if you don’t need to use the next object, 
+ * you must specify it to maintain the signature. Otherwise, the next 
+ * object will be interpreted as regular middleware and will fail to 
+ * handle errors.
+ */
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
